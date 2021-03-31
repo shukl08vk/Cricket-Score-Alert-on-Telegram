@@ -6,7 +6,7 @@ import time
 
 from aiogram import Bot, Dispatcher, executor, types
 
-API_TOKEN = 'Your Bot Api'
+API_TOKEN = 'Your Bot Token'
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
