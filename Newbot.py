@@ -111,14 +111,14 @@ async def echo(message: types.Message):
                         runs= '' if four or six or wicket else str(recent_ball['totalRuns'])+' Runs'
                         recent=str(recent_ball['oversActual'])+' '+recent_ball['title']+', '+four+six+wicket+runs
                         #print(recent)
-                        await bot.send_message(734864469,recent)
+                        await bot.send_message(ChatID,recent) # your chat id
                     if str(recent_ball['oversActual']).find('.6')!=-1:
                         batsman_info=batsman_data(r)
                         bowler_info=bowler_data(r)
                         recent_comment=r['recentBallCommentary']['ballComments'][0]
                         print(recent_comment)
                         output=str(recent_comment['over']['team']['abbreviation'])+' - '+str(recent_comment['over']['totalRuns'])+'/'+str(recent_comment['over']['totalWickets']) + ' \n ' +str(recent_comment['over']['overRuns'])+' runs * '+str(recent_comment['over']['overWickets'])+' wckts'+'\n'+'batting=> '+' || '.join(batsman_info) +'\n'+'bowling=> '+' || '.join(bowler_info)
-                        await bot.send_message(734864469,output)
+                        await bot.send_message(chatID,output)   #your chat id
                         #print(output)
                         time.sleep(30)
                         
