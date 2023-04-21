@@ -3,17 +3,22 @@ import signal
 import requests
 import sys
 import time
+import asyncio
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, Router, types
+#from aiogram.dispatcher import Router
+from aiogram.filters import Command
+from aiogram.types import Message
 
-API_TOKEN = '1622733656:AAGe6jQ_262yE9HaF47TrK-qiM8bxrTLRlI'
+API_TOKEN = sys.argv[1]        # enter your api key in command line
+router = Router()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+#bot = Bot(token=API_TOKEN)
+#dp = Dispatcher()
 
 
 def signal_handler(signal, frame):
@@ -35,7 +40,7 @@ def wait_time(g_time):
 
 def batsman_data(r):
     bat=[]
-    for batsmen in r['liveSummary']['batsmen']:
+    for batsmen in r['liveSummary']['batsmanPlayerId']:
         bat.append(batsmen['player']['battingName']+'     '+str(batsmen['runs'])+'('+str(batsmen['balls'])+')')
     return bat
 
@@ -53,7 +58,8 @@ for i,match_d in enumerate(matches_detail):
     matches_detail_str+=f'live{i+1} --> '+str(match_d[1])+'\n'
 #print(matches_detail)
 
-@dp.message_handler(commands=['start', 'help'])
+#@dp.message_handler(commands=['start', 'help'])
+@router.message(Command(commands=["start","help"]))
 async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
@@ -67,7 +73,7 @@ async def send_welcome(message: types.Message):
 
 
 
-@dp.message_handler()
+@router.message()
 async def echo(message: types.Message):
     # old style:
     # await bot.send_message(message.chat.id, message.text)
@@ -122,7 +128,24 @@ async def echo(message: types.Message):
 
             else:
                 await message.reply('No Live commentary available for this match')
+                wait_time(10)
 
 
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+
+'''if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)'''
+
+async def main() -> None:
+    # Dispatcher is a root router
+    dp = Dispatcher()
+    # ... and all other routers should be attached to Dispatcher
+    dp.include_router(router)
+
+    # Initialize Bot instance with a default parse mode which will be passed to all API calls
+    bot = Bot(API_TOKEN, parse_mode="HTML")
+    # And the run events dispatching
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    #logging.basicConfig(level=logging.INFO)
+    asyncio.run(main())
